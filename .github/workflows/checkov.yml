@@ -1,0 +1,42 @@
+name: 'Checkov Security Check'
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    # run every day at 2pm PST
+    - cron: '0 22 * * *'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+
+      - name: Test with Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+          quiet: true
+
+      - name: Upload SARIF file
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: sarif
+          path: results.sarif
