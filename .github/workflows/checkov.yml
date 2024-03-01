@@ -10,7 +10,7 @@ on:
     branches:
       - main
     paths:
-      - ".github/workflows/main.yml"
+      - ".github/workflows/**.yml"
       - "**.tf*"
   workflow_dispatch:
   schedule:
